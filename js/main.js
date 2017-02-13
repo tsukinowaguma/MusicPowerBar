@@ -34,7 +34,7 @@ bars.prototype =  {
 				var names =_bars.filename.split(".");
 				var type_name = names[names.length-1];
 				if(type_name != "mp3" | "wma" |"wav"|"flac"|"ape"|"asf" ){
-					info.innerHTML("不是音乐格式");
+					info.innerHTML = "不是音乐格式";
 					return;
 				}
 				//此时上传成功则改变info
