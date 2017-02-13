@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>音乐能量条</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="./css/style.css">
+</head>
+<body>
+<div id="wrapper">
+    <div id="fileWrapper" class="file_wrapper">
+        <div id="info">
+            HTML5 Audio API 
+        </div>
+        <label for="uploadedFile">选择一个音乐文件</label>
+        <input type="file" id="uploadedFile"></input>
+    </div>
+    <div id="bars_wrapper">
+        <canvas id='canvas' width="800" height="350"></canvas>
+    </div>
+    <div id="paused" style="display:block;" class="control"><span>停止</span></div>
+    <div id="playing" style="display:none;"  class="control"><span>重新开始</span></div>
+</div>
+
+<script type="text/javascript" src = "./js/main.js"></script>
+</body>
+</html>

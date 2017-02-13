@@ -1,0 +1,17 @@
+#fileWrapper {
+	transition: all 0.5s ease;
+}
+#fileWrapper:hover {
+	opacity:1!important;
+}
+#bars_wrapper {
+	text-align: center;
+}
+.control{
+	margin: 0 auto;
+	text-align: center;
+	cursor: pointer;
+}
+.control:hover{
+	color: red;
+}
