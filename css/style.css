@@ -15,3 +15,8 @@
 .control:hover{
 	color: red;
 }
+
+body{
+	background: black;
+	color:white;
+}

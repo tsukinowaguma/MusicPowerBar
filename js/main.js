@@ -3,10 +3,10 @@ window.onload = function(){
 }
 
 var bars =function(){
-	this.file = null;
-	this.filename =null;
-	this.audioctx = null;
-	this.source = null;
+	this.file = null;	//记录文件
+	this.filename =null;	//用于记录文件名，用于在传递文件时分析文件是否为音乐文件
+	this.audioctx = null;	//记录AudioContext对象用于解码ArrayBuffer数据获得AudioBuffer数据
+	this.source = null; //记录AudioBufferSource对象用于关联播放与控制
 };
 
 bars.prototype =  {
@@ -19,7 +19,8 @@ bars.prototype =  {
 		//保存this
 		var _bars = this;	
 		var audio_input = document.getElementById("uploadedFile"); 
-		var playing = document.getElementById("playing");
+		var replay = document.getElementById("replay");
+		var paused = document.getElementById("paused");
 		var info = document.getElementById("info");
 		//当audio有文件上传的时候
 		audio_input.onchange = function(){
@@ -34,13 +35,14 @@ bars.prototype =  {
 				var names =_bars.filename.split(".");
 				var type_name = names[names.length-1];
 				if(type_name != "mp3" | "wma" |"wav"|"flac"|"ape"|"asf" ){
-					info.innerHTML("不是音乐格式");
+					info.innerHTML = "不是音乐格式";
 					return;
 				}
 				//此时上传成功则改变info
 				info.innerHTML= "正在转码";
 				//让重新开始的按钮消失
-				playing.setAttribute("style","display:none");
+				replay.setAttribute("style","display:none");
+				paused.setAttribute("style","display:block");
 				//让缓存清空
 				_bars.audiobuffer = null;
 				//实例一个AudioContext对象并传值
@@ -53,7 +55,7 @@ bars.prototype =  {
 
 	start:function(){
 		var _bars = this;
-		var file  = _bars.file;
+		var file  = this.file;
 		//实例一个FileReader对象
 		var reader  = new FileReader();
 		var audioctx = this.audioctx;
@@ -67,28 +69,23 @@ bars.prototype =  {
 			});
 		};
 	},
-
-	audioBuffer : null, //记录buffer,控制停止与重新开始
-
 	play : function(buffer){
 		var _bars=this;
 		var info = document.getElementById("info");
 		var fileWrapper = document.getElementById("fileWrapper");
-		// 存储buffer用于暂停和重新开始
-		this.audioBuffer = buffer;
 		//根据API实例一个AudioBufferSource对象,只有通过这个对象才能播放音频
-		var buffer_source= _bars.audioctx.createBufferSource();
+		var buffer_source= this.audioctx.createBufferSource();
 		this.source = buffer_source;
 		//实例一个分析器来分析音频文件的频谱
-		var analyser = _bars.audioctx.createAnalyser();
+		var analyser =this.audioctx.createAnalyser();
 		//将BufferSource对象连接到分析器
 		this.source.connect(analyser);
-		//bufferSource对象的buffer属性用来存储之前获得的缓冲
+		//bufferSource对象的buffer属性用来存储之前获得的缓冲,并得以记录关联开关控制
 		this.source.buffer = buffer;
 		//连接audioctx.destination属性
 		this.source.connect(_bars.audioctx.destination);
 		//开始播放
-		this.source .start();
+		this.source.start();
 		//改变样式
 		info.innerHTML = "正在播放" + _bars.filename;
 		fileWrapper.setAttribute("style","opacity:0.5");
@@ -127,17 +124,19 @@ bars.prototype =  {
 	//开关控制
 	control: function(){
 		var paused = document.getElementById("paused");
-		var playing = document.getElementById("playing");
+		var replay = document.getElementById("replay");
 		var _bars =this;
 		paused.onclick = function(){
-			if(!_bars.source) return;
+			if(!_bars.source) return;	
 			_bars.source.stop();
-			playing.setAttribute("style","display:block");
+			replay.setAttribute("style","display:block");
+			paused.setAttribute("style","display:none");
 		}
-		playing.onclick = function(){
+		replay.onclick = function(){
 			if(!_bars.source) return;
-			_bars.play(_bars.audioBuffer);
-			playing.setAttribute("style","display:none");
+			_bars.play(_bars.source.buffer);
+			replay.setAttribute("style","display:none");
+			paused.setAttribute("style","display:block");
 		}
 	}
 }
