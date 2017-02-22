@@ -65,6 +65,7 @@ bars.prototype =  {
 			var result = e.target.result;
 			//解码ArrayBuffer数据获得AudioBuffer用来回调执行play函数
 			audioctx.decodeAudioData(result).then(function(buffer) {
+				console.log(buffer.duration);
   				_bars.play(buffer);
 			});
 		};
@@ -91,13 +92,19 @@ bars.prototype =  {
 		fileWrapper.setAttribute("style","opacity:0.5");
 		//开始作图
 		this.draw(analyser);
+		this.source.onended = function(){
+			var paused = document.getElementById("paused");
+			var replay = document.getElementById("replay");
+			replay.setAttribute("style","display:block");
+			paused.setAttribute("style","display:none");
+		}
 	},
 
 	draw : function(analyser){
 		var canvas = document.getElementById('canvas'),
    		cwidth = canvas.width,
 		cheight = canvas.height - 2,
-    	meterWidth = 10, //能量条的宽度
+    	meterWidth = 8, //能量条的宽度
     	gap = 2, //能量条间的间距
     	meterNum = cwidth / (meterWidth + gap), //计算当前画布上能画多少条
     	ctx = canvas.getContext('2d');
@@ -114,7 +121,7 @@ bars.prototype =  {
 		    ctx.clearRect(0, 0, cwidth, cheight); //清理画布准备画画
 		    for (var i = 0; i < meterNum; i++) {
 		        var value = array[i * step];//用来决定高度
-		        ctx.fillRect(i * 12 /*频谱条的宽度+条间间距*/ , cheight - value , meterWidth, cheight);
+		        ctx.fillRect(i * ( meterWidth+ gap) /*频谱条的宽度+条间间距*/ , cheight - value , meterWidth, cheight);
 		    }
 		    requestAnimationFrame(drawMeter);
 		}
